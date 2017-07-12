@@ -1,0 +1,56 @@
+
+<!-- Settings Panel -->
+<script type="text/x-red" data-template-name="panasonicprojector-panasonicprojector">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ipAddress"><i class="icon-bookmark"></i> IP Address</label>
+        <input type="text" id="node-input-ipAddress">
+    </div>
+    <div class="form-row">
+        <label for="node-input-port"><i class="icon-bookmark"></i> Port</label>
+        <input type="text" id="node-input-port">
+    </div>
+    <div class="form-row">
+        <label for="node-input-username"><i class="icon-bookmark"></i> Username</label>
+        <input type="text" id="node-input-username">
+    </div>
+    <div class="form-row">
+        <label for="node-input-password"><i class="icon-bookmark"></i> Password</label>
+        <input type="text" id="node-input-password">
+    </div>
+    <div class="form-row">
+        <label for="node-input-projectorId"><i class="icon-bookmark"></i> ID</label>
+        <input type="text" id="node-input-projectorId">
+    </div>
+</script>
+
+<!-- Register -->
+<script type="text/javascript">
+    RED.nodes.registerType('panasonicprojector-panasonicprojector', {
+        category: 'Panasonic',
+        color: '#ffffef',
+        defaults: {
+            name: {value: ""},
+            ipAddress: {value: "0.0.0.0", required: true},
+            port: {value: 1024, required: true, validate: RED.validators.number()},
+            username: {value: "admin1", required: true},
+            password: {value: "panasonic", required: true},
+            projectorId: {value: "ZZ", required: true},
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "panasonic.png",
+        label: function() {
+            return this.name||"Panasonic Projector";
+        }
+    });
+</script>
+
+<!-- Information Panel -->
+<script type="text/x-red" data-help-name="panasonicprojector-panasonicprojector">
+    <h1>Panasonic Projector Control Node</h1>
+    <p>Fancy Text Should Go Here At Some Point :D</p>
+</script>

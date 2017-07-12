@@ -1,0 +1,29 @@
+{
+  "name": "node-red-contrib-panasonicprojector",
+  "version": "0.0.1",
+  "description": "Panasonic Projector Control For Node Red",
+  "main": "panasonicprojector.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:haydendonald/node-red-contrib-panasonicprojector.git"
+  },
+  "keywords": [
+    "node-red",
+    "panasonic",
+    "projector",
+    "panasonic projector"
+  ],
+  "node-red": {
+    "nodes": {
+      "PanasonicProjectorControl": "panasonicprojector.js"
+    }
+  },
+  "author": "Hayden Donald",
+  "bugs": {
+    "url": "https://github.com/haydendonald/node-red-contrib-panasonicprojector/issues"
+  },
+  "homepage": "https://github.com/haydendonald/node-red-contrib-panasonicprojector",
+  "dependencies": {
+    "debug": "^2.2.0"
+  }
+}

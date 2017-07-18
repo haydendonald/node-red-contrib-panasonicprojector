@@ -52,5 +52,28 @@
 <!-- Information Panel -->
 <script type="text/x-red" data-help-name="panasonicprojector-panasonicprojector">
     <h1>Panasonic Projector Control Node</h1>
-    <p>Fancy Text Should Go Here At Some Point :D</p>
+    <p>Controls a panasonic projector over TCP</p>
+    <p><a href="https://github.com/haydendonald/node-red-contrib-panasonicprojector"<a>Github</a></p>
+    </br>
+    <h2>How To Use:</h2>
+    <p>Simply pass the following into the module</p>
+    <h3>Using Basic Commands</h3>
+    <p><strong>msg.command</strong>: The command to be processed</p>
+    <p><strong>msg.parameter</strong>: The parameter(s) of the command, not required if there is none</p>
+    <h3>Using Sub Commands</h3>
+    <p><strong>msg.command</strong>: The command to be processed</p>
+    <p><strong>msg.subcommand</strong>: The sub command to be processed</p>
+    <p><strong>msg.parameter</strong>: The parameter(s) of the command, not required if there is none</p>
+    </br>
+    <h2>Error Codes:</h2>
+    <p><strong>ERR1</strong>: Undefined control command</p>
+    <p><strong>ERR2</strong>: Out of parameter range</p>
+    <p><strong>ERR3</strong>: Busy state</p>
+    <p><strong>ERR4</strong>: Timeout</p>
+    <p><strong>ERR5</strong>: Wrong data length</p>
+    <p><strong>ERRA</strong>: Password mismatch</p>
+    <p><strong>ER401</strong>: Command cannot be executed</p>
+    <p><strong>ER402</strong>: Invalid parameter</p>
+    </br>
+    <p><a href="https://eww.pavc.panasonic.co.jp/projector/extranet/main/products/ez580/manual/pt-ez580_en.pdf">Commands On Page 142</a></p>
 </script>

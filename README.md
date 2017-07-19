@@ -24,7 +24,6 @@ Simply pass the following into the module:
 
 ## Commands
 ![Panasonic Projector Commands](https://raw.githubusercontent.com/haydendonald/node-red-contrib-panasonicprojector/master/img/commands.png)
-Format: ![Alt Text](url)
 
 
 

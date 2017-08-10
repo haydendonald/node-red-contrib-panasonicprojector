@@ -25,6 +25,12 @@ module.exports = function(RED)
         {
             server.destroy();
         });
+		
+		server.on("error", function(error)
+		{
+			RED.log.error("Socket Error: " + error);
+			node.status({fill:"red",shape:"dot",text:"Internal Error, Check Debug"}); 
+		});
 
         //When a request is received on the input
         this.on("input", function(msg) {
@@ -34,13 +40,13 @@ module.exports = function(RED)
                 switch(state) {
                     case "handshakesuccess":
                         md5Hash = md5;
-                        var command = msg.command;
-                        var subcommand = msg.subcommand;
-                        var parameter = msg.parameter;
+                        var command = msg.payload.command;
+                        var subcommand = msg.payload.subcommand;
+                        var parameter = msg.payload.parameter;
 
                         //Check
                         if(!command){
-                            node.status({fill:"yellow",shape:"dot",text:"No msg.command Parameter"});   
+                            node.status({fill:"yellow",shape:"dot",text:"No msg.payload.command Parameter"});   
                             return;
                         }
 
@@ -66,7 +72,7 @@ module.exports = function(RED)
                                 else {
                                     node.status({fill:"green",shape:"dot",text:"Sent!"}); 
                                 }
-                                msg.response = data.toString('utf8');
+                                msg.payload.response = data.toString('utf8');
                                 //Return the data and disconnect
                                 server.removeListener("data", handler);
                                 server.destroy();

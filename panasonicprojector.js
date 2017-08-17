@@ -4,7 +4,6 @@ var tcp = require('net');
 var eventEmitter = require("events");
 var timeoutPeriod = 500;
 class EventEmitter extends eventEmitter{}
-
 module.exports = function(RED)
 {
     //Main Function
@@ -66,8 +65,13 @@ module.exports = function(RED)
                             var data = getData(data, command);
                             if(data != "error") {
                                 if(data.includes("ER")){
+                                    if(data == "ER401") {
                                     RED.log.error("An Error Occurred: Error Returned " + data);
                                     node.status({fill:"red",shape:"dot",text:"Error: " + data}); 
+                                    }
+                                    else {
+                                        node.status({fill:"yellow",shape:"dot",text:"Returned Cannot Execute"}); 
+                                    }
                                 }
                                 else {
                                     node.status({fill:"green",shape:"dot",text:"Sent!"}); 

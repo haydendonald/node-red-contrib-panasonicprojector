@@ -28,7 +28,9 @@ module.exports = function(RED)
 		server.on("error", function(error)
 		{
 			RED.log.error("Socket Error: " + error);
-			node.status({fill:"red",shape:"dot",text:"Internal Error, Check Debug"}); 
+            node.status({fill:"red",shape:"dot",text:"Internal Error, Check Debug"}); 
+            msg = {"payload":{}};
+            msg.payload.response = error;
 		});
 
         //When a request is received on the input

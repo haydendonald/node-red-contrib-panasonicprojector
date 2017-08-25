@@ -33,6 +33,22 @@ module.exports = function(RED)
 
         //When a request is received on the input
         this.on("input", function(msg) {
+           if(typeof msg.payload.ipAddress === "string") {
+                ipAddress = msg.payload.ipAddress;
+            }
+            if(typeof msg.payload.port === "string") {
+                port = msg.payload.port;
+            }
+            if(typeof msg.payload.username === "string") {
+                username = msg.payload.username;
+            }
+           if(typeof msg.payload.password === "string") {
+                password = msg.payload.password;
+            }
+           if(typeof msg.payload.projectorId === "string") {
+                projectorId = msg.payload.projectorId;
+            }
+
             var done = false;
             handShake(server, emitter, ipAddress, port, username, password, function(state, description, md5)
             {
@@ -65,7 +81,7 @@ module.exports = function(RED)
                             var data = getData(data, command);
                             if(data != "error") {
                                 if(data.includes("ER")){
-                                    if(data == "ER401") {
+                                    if(data != "ER401") {
                                     RED.log.error("An Error Occurred: Error Returned " + data);
                                     node.status({fill:"red",shape:"dot",text:"Error: " + data}); 
                                     }

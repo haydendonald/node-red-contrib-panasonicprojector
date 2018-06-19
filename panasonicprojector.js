@@ -1,15 +1,16 @@
 var crypto = require('crypto');
-var debug = require('debug')('node-red-contrib-panasonicprojector');
+//var debug = require('debug')('node-red-contrib-panasonicprojector');
 var tcp = require('net');
 var eventEmitter = require("events");
 var timeoutPeriod = 500;
 class EventEmitter extends eventEmitter{}
+"use strict"
 module.exports = function(RED)
 {
     //Main Function
     function PanasonicProjector(config)
     {
-        const emitter = new EventEmitter();
+        var emitter = new EventEmitter();
         RED.nodes.createNode(this, config);
         var projectorId = config.projectorId;
         var ipAddress = config.ipAddress;

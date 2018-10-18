@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-panasonicprojector",
-  "version": "2.0.1",
+  "version": "1.3.0",
   "description": "Panasonic Projector Control For Node Red",
   "main": "panasonicprojector.js",
   "repository": {
@@ -16,8 +16,7 @@
   ],
   "node-red": {
     "nodes": {
-      "PanasonicProjector": "panasonicprojector.js",
-      "Command": "command.js"
+      "PanasonicProjectorControl": "panasonicprojector.js"
     }
   },
   "author": "Hayden Donald",

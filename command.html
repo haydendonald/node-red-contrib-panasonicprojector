@@ -1,0 +1,71 @@
+
+<!-- Settings Panel -->
+<script type="text/x-red" data-template-name="panasonic-command">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-network"><i class="icon-bookmark"></i> Projector</label>
+        <input type="text" id="node-input-network">
+    </div>
+    <div class="form-row">
+        <label for="node-input-command"><i class="icon-bookmark"></i> Command</label>
+        <input type="text" id="node-input-command">
+    </div>
+    <div class="form-row">
+        <label for="node-input-parameter"><i class="icon-bookmark"></i> Parameter</label>
+        <input type="text" id="node-input-parameter">
+    </div>
+</script>
+
+<!-- Register -->
+<script type="text/javascript">
+    RED.nodes.registerType('panasonic-command', {
+        category: 'Panasonic',
+        color: '#ffffef',
+        defaults: {
+            name: {value: ""},
+            network: {value: "", type: "panasonic-projector"},
+            command: {value: "", required: true},
+            parameter: {value: ""}
+        },
+        inputs: 1,
+        outputs: 1,
+        align: "right",
+        icon: "panasonic.png",
+        paletteLabel: "Command",
+        label: function() {
+            return this.name||"Panasonic Command";
+        }
+    });
+</script>
+
+<!-- Information Panel -->
+<script type="text/x-red" data-help-name="panasonic-command">
+    <h1>Panasonic Projector Control Node</h1>
+    <p>Controls a panasonic projector over TCP</p>
+    <p><a href="https://github.com/haydendonald/node-red-contrib-panasonicprojector"<a>Github</a></p>
+    </br>
+    <h2>How To Use:</h2>
+    <p>Simply pass the following into the module</p>
+    <h3>Using Basic Commands</h3>
+    <p><strong>msg.payload.command</strong>: The command to be processed</p>
+    <p><strong>msg.payload.parameter</strong>: The parameter(s) of the command, not required if there is none</p>
+    <h3>Using Sub Commands</h3>
+    <p><strong>msg.payload.command</strong>: The command to be processed</p>
+    <p><strong>msg.payload.subcommand</strong>: The sub command to be processed</p>
+    <p><strong>msg.payload.parameter</strong>: The parameter(s) of the command, not required if there is none</p>
+    </br>
+    <h2>Error Codes:</h2>
+    <p><strong>ERR1</strong>: Undefined control command</p>
+    <p><strong>ERR2</strong>: Out of parameter range</p>
+    <p><strong>ERR3</strong>: Busy state</p>
+    <p><strong>ERR4</strong>: Timeout</p>
+    <p><strong>ERR5</strong>: Wrong data length</p>
+    <p><strong>ERRA</strong>: Password mismatch</p>
+    <p><strong>ER401</strong>: Command cannot be executed</p>
+    <p><strong>ER402</strong>: Invalid parameter</p>
+    </br>
+    <img src="https://raw.githubusercontent.com/haydendonald/node-red-contrib-panasonicprojector/master/img/commands.png" alt="Panasonic Projector Commands"/>
+</script>

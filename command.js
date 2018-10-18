@@ -18,6 +18,9 @@ module.exports = function(RED)
             if(msg.payload.command !== undefined && msg.payload.command !== null){command = msg.payload.command;}
             if(msg.payload.parameter !== undefined && msg.payload.parameter !== null){parameter = msg.payload.parameter;}
 
+            if(command === undefined || command === null){node.status({fill:"yellow",shape:"dot",text:"Command Invalid"});}
+            if(parameter === undefined || parameter === null){parameter = "";}
+
             network.server.send(generateData(command, parameter, network.projectorId, network.md5Hash),
                 function(success){
                     if(success) {

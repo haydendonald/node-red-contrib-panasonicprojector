@@ -22,8 +22,94 @@ This node is responsible for handling the network portion of a projector. This n
 - ```User``` is the username for authentication. Default is ```admin1```
 - ```Password``` is the password for authentication. Default is ```panasonic1```
 
-# Message Payloads
-Coming :)
+# Input Message
+The following is the basic syntax of a message to be sent to the node
+```
+{
+    "payload": {
+        "action": "set/get", // Should we set the value or get the value
+        "command": "", // The command to be executed
+        "value": "" // The value to set (Not required for action=get)
+    }
+}
+```
+## Get Commands
+The following commands are supported for using ```action="get"```
+* ```name``` The name of the projector
+* ```model``` The model of the projector
+* ```<<rawCommand>>``` Will set a raw command value. See [here](https://github.com/peschuster/ntcontrol-connection/blob/master/src/Commands.ts) for more information. Where ```rawCommand``` is the command name for instance ```ModelNameCommand```
+
+### Example
+```
+{
+    "payload": {
+        "action": "get",
+        "command": "name"
+    }
+}
+```
+
+## Set Commands
+The following commands are supported for using ```action="set"```
+* ```power``` Sets the power state of the projector.
+    * true/false
+* ```shutter``` Sets the shutter state of the projector.
+    * true/false
+* ```freeze``` Sets the freeze state of the projector.
+    * true/false
+* ```input``` Sets the input on the projector
+    * COMPUTER1
+    * COMPUTER2
+    * VIDEO
+    * Y/C
+    * DVI
+    * HDMI1
+    * HDMI2
+    * NETWORK/USB
+    * Panasonic Application
+    * Miracast/Mirroring
+    * MEMORY VIEWER
+    * SDI1
+    * SDI2
+    * DIGITAL LINK
+* ```<<rawCommand>>``` Will set a raw command value. See [here](https://github.com/peschuster/ntcontrol-connection/blob/master/src/Commands.ts) for more information. Where ```rawCommand``` is the command name for instance ```ModelNameCommand```
+
+### Example
+```
+{
+    "payload": {
+        "action": "set",
+        "command": "power",
+        "value": true //boolean
+    }
+}
+```
+
+# Output Message
+## Response Message
+This message relays information about the node status. For example the connection states
+```
+{
+    "topic": "information",
+    "payload": {
+        "type": "The type of information message",
+        "message": "The message of the information."
+    }
+}
+```
+
+
+## Information Message
+This message relays responses sent from the projector
+```
+{
+    "topic": "response",
+    "payload": {
+        "command": "The command",
+        "value": "The value"
+    }
+}
+```
 
 # Version History
 ## 3.0.0 (Major Update)

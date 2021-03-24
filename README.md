@@ -1,30 +1,31 @@
-# node-red-contrib-panasonicprojector
-Panasonic Network Control For Node Red
+# Panasonic Projector Control for NodeRed
+This project allows interfacing with a panasonic projector using the NTControl protocol provided by [ntcontrol-connection](https://github.com/peschuster/ntcontrol-connection) by peschuster.
 
+# Work in progress!
+This project is currently being converted to use ntcontrol-connection as the previous implementation was developed when i had limited knowledge and isn't amazingly reliable.
 
-# How To Use:
-Simply pass the following into the module:
-### Basic Commands
-**msg.payload.command**: The command to be processed  
-**msg.payload.parameter**: The parameters(s) of the command, not required if there is none  
-### Using Sub Commands
-**msg.payload.command**: The command to be processed  
-**msg.payload.subcommand**: The sub command to be processed  
-**msg.payload.parameter**: The parameter(s) of the command, not required if there is none  
+The aims of moving to ntcontrol-connection is to provide better control of multiple projectors as well as more functionality.
 
-## Error Codes:
-**ERR1**: Undefined control command  
-**ERR2**: Out of parameter range  
-**ERR3**: Busy state  
-**ERR4**: Timeout  
-**ERR5**: Wrong data length  
-**ERRA**: Password mismatch  
-**ER401**: Command cannot be executed  
-**ER402**: Invalid parameter  
-The module will also pass network connection errors on the output
+# Node Information
+## Panasonic Projector Node
+This node is what takes input and output of messages
+### Fields
+- ```Name``` the name shown in the flow
+- ```Projector``` the projector to control. See below
 
-## Commands
-![Panasonic Projector Commands](https://raw.githubusercontent.com/haydendonald/node-red-contrib-panasonicprojector/master/img/commands.png)
+## Panasonic Network Node
+This node is responsible for handling the network portion of a projector. This node defines a projector
+### Fields
+- ```Name``` the name shown in the flow
+- ```IP Address``` is the IP Address of the projector to be controlled
+- ```Port``` is the port. Default is ```1024```
+- ```User``` is the username for authentication. Default is ```admin1```
+- ```Password``` is the password for authentication. Default is ```panasonic1```
 
+# Message Payloads
+Coming :)
 
-
+# Version History
+## 3.0.0 (Major Update)
+- Message format has been updated, this is a big change to anything before version 3.0
+- Moved the project to use [ntcontrol-connection](https://github.com/peschuster/ntcontrol-connection) by peschuster

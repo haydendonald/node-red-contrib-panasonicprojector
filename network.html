@@ -1,0 +1,53 @@
+<!-- Settings Panel -->
+<script type="text/x-red" data-template-name="panasonicprojector-network">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-ipAddress"><i class="icon-bookmark"></i> IP Address</label>
+        <input type="text" id="node-config-input-ipAddress">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-port"><i class="icon-bookmark"></i> Port</label>
+        <input type="text" id="node-config-input-port">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-username"><i class="icon-bookmark"></i> User</label>
+        <input type="text" id="node-config-input-username">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="icon-bookmark"></i> Password</label>
+        <input type="text" id="node-config-input-password">
+    </div>
+</script>
+
+<!-- Register -->
+<script type="text/javascript">
+    RED.nodes.registerType('panasonicprojector-network', {
+        category: 'config',
+        defaults: {
+            name: {value: ""},
+            ipAddress: {value: "0.0.0.0", required: true},
+            port: {value: 1024, required: true, validate: RED.validators.number()},
+            username: {value: "admin1", required: true},
+            password: {value: "panasonic", required: true},
+        },
+        label: function() {
+            return this.name||"Panasonic Projector";
+        }
+    });
+</script>
+
+<!-- Information Panel -->
+<script type="text/x-red" data-help-name="panasonicprojector-network">
+    This node is responsible for handling the network portion of a projector. This node defines a projector
+    <h1>Node Configuration</h1>
+    <ul>
+        <li><strong>Name</strong>: Is the name shown in the flow</li>
+        <li><strong>IP Address</strong>: Is the IP Address of the projector to be controlled</li>
+        <li><strong>Port</strong>: Is the port. Default is 1024</li>
+        <li><strong>User</strong>: Is the username for authentication. Default is admin1</li>
+        <li><strong>Password</strong>: Is the password for authentication. Default is panasonic1</li>
+    </ul>
+</script>

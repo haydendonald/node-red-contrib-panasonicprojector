@@ -1,0 +1,44 @@
+
+<!-- Settings Panel -->
+<script type="text/x-red" data-template-name="panasonicprojector-projector">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-network"><i class="icon-bookmark"></i> Projector</label>
+        <input type="text" id="node-input-network">
+    </div>
+</script>
+
+<!-- Register -->
+<script type="text/javascript">
+    RED.nodes.registerType('panasonicprojector-projector', {
+        category: 'Panasonic',
+        color: '#ffffef',
+        defaults: {
+            name: {value: ""},
+            network: {value: "", type: "panasonicprojector-network"},
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "panasonic.png",
+        align: "right",
+        paletteLabel: "Projector",
+        label: function() {
+            return this.name||"Panasonic Projector";
+        }
+    });
+</script>
+
+<!-- Information Panel -->
+<script type="text/x-red" data-help-name="panasonicprojector-projector">
+    This node is responsible for handling the input and output of messages from the projector
+    <h1>Node Configuration</h1>
+    <ul>
+        <li><strong>Name</strong>: Is the name shown in the flow</li>
+        <li><strong>Projector</strong>: The projector to control</li>
+    </ul>
+    <h1>Payloads</h1>
+    Coming Soon!
+</script>

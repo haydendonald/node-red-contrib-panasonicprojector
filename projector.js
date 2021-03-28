@@ -5,12 +5,12 @@ module.exports = function(RED)
     {
         RED.nodes.createNode(this, config);
 
-        var projector = RED.nodes.getNode(config.network);
-        var name = config.name;
+        //var name = config.name;
         var node = this;
-
+        node.projector = RED.nodes.getNode(config.network);
+        
         //Add a callback to show status on this node
-        projector.addStatusCallback(function(state, message) {
+        node.projector.addStatusCallback(function(state, message) {
             switch(state) {
                 case "success": {
                     node.status({fill:"green",shape:"dot",text:message});
@@ -41,13 +41,13 @@ module.exports = function(RED)
         node.sendMessage = function(msg) {
             msg.projector = {
                 "nodered": {
-                    "projectorName": projector.name,
+                    "projectorName": node.projector.name,
                     "nodeName": node.name
                 },
                 "projectorInformation": {
-                    "name": projector.getProjectorName(),
-                    "model": projector.getProjectorModel(),
-                    "ipAddress": projector.ipAddress
+                    "name": node.projector.getProjectorName(),
+                    "model": node.projector.getProjectorModel(),
+                    "ipAddress": node.projector.ipAddress
                 }
             }
             node.send(msg);
@@ -78,13 +78,13 @@ module.exports = function(RED)
 
                     //Switch the command
                     switch(msg.payload.command) {
-                        case "power": {projector.setPower(msg.payload.value); break;}
-                        case "shutter": {projector.setShutter(msg.payload.value); break;}
-                        case "freeze": {projector.setFreeze(msg.payload.value); break;}
-                        case "input": {projector.setInput(msg.payload.value); break;}
+                        case "power": {node.projector.setPower(msg.payload.value); break;}
+                        case "shutter": {node.projector.setShutter(msg.payload.value); break;}
+                        case "freeze": {node.projector.setFreeze(msg.payload.value); break;}
+                        case "input": {node.projector.setInput(msg.payload.value); break;}
                         default: {
                             //Raw command handler
-                            projector.sendRaw(msg.payload.command, msg.payload.value).then(
+                            node.projector.sendRaw(msg.payload.command, msg.payload.value).then(
                                 function(data) {
                                     node.sendMessage({
                                         "topic": "response",
@@ -111,7 +111,7 @@ module.exports = function(RED)
                                 "topic": "response",
                                 "payload": {
                                     "command": msg.payload.command,
-                                    "value": projector.getProjectorName()
+                                    "value": node.projector.getProjectorName()
                                 }
                             });
                         }
@@ -120,13 +120,13 @@ module.exports = function(RED)
                                 "topic": "response",
                                 "payload": {
                                     "command": msg.payload.command,
-                                    "value": projector.getProjectorModel()
+                                    "value": node.projector.getProjectorModel()
                                 }
                             });
                         }
                         default: {
                             //Raw command handler
-                            projector.queryRaw(msg.payload.command).then(
+                            node.projector.queryRaw(msg.payload.command).then(
                                 function(data) {
                                     node.sendMessage({
                                         "topic": "response",

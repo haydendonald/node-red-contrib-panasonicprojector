@@ -1,7 +1,5 @@
 module.exports = function(RED)
 {
-    var NtControl = require("ntcontrol-connection")
-
     //Main Function
     function Network(config)
     {
@@ -10,64 +8,65 @@ module.exports = function(RED)
         node.name = config.name;
         node.ipAddress = config.ipAddress;
         node.port = config.port;
-        var username = config.username;
-        var password = config.password;
-        var statusCallbacks = [];
-        var connected = false;
+        node.username = config.username;
+        node.password = config.password;
+        node.statusCallbacks = [];
+        node.connected = false;
+        node.NtControl = require("ntcontrol-connection")
     
-        const projectorConnection = new NtControl.Client(node.ipAddress, node.port, (l, m) => console.log(l + ' - ' + m));
-        projectorConnection.setAuthentication(username, password);
-        const projector = new NtControl.Projector(projectorConnection);
-        projectorConnection.connect();
+        node.projectorConnection = new node.NtControl.Client(node.ipAddress, node.port, (l, m) => console.log(l + ' - ' + m));
+        node.projectorConnection.setAuthentication(node.username, node.password);
+        node.projector = new node.NtControl.Projector(node.projectorConnection);
+        node.projectorConnection.connect();
         
-        projectorConnection.on("connect", function() {
-            if(!connected) {
+        node.projectorConnection.on("connect", function() {
+            if(!node.connected) {
                 node.updateStatus("success", "Connected");
-                connected = true;
+                node.connected = true;
             }
         });
 
-        projectorConnection.on("disconnect", function() {
-            if(connected) {
+        node.projectorConnection.on("disconnect", function() {
+            if(node.connected) {
                 node.updateStatus("error", "Disconnected");
                 node.warn("Panasonic Projector (" + node.ipAddress + ") Lost Connection");
-                connected = false;
+                node.connected = false;
             }
         });
 
-        projectorConnection.on("data", function(data) {
+        node.projectorConnection.on("data", function(data) {
             console.log("DATA " + data);
         });
 
-        projectorConnection.on("debug", function(msg) {
+        node.projectorConnection.on("debug", function(msg) {
             if(msg.includes("Network error")) {
                 node.updateStatus("error", msg);
                 node.error("Panasonic Projector (" + node.ipAddress + ") Error: " + msg);
             }
         });
 
-        projectorConnection.on("auth_error", function() {
+        node.projectorConnection.on("auth_error", function() {
             node.updateStatus("error", "Auth Error");
             node.error("Panasonic Projector (" + node.ipAddress + ") Authentication Error!");
         });
 
         //Add callbacks for status information
-        node.addStatusCallback = function(func) {statusCallbacks.push(func);}
+        node.addStatusCallback = function(func) {node.statusCallbacks.push(func);}
         node.updateStatus = function(color, message) {
-            for(var i in statusCallbacks) {
-                statusCallbacks[i](color, message);
+            for(var i in node.statusCallbacks) {
+                node.statusCallbacks[i](color, message);
             }
         }
 
         //Add basic commands that can be executed
-        node.setPower = function(state) {projector.setPower(state);}
-        node.setShutter = function(state) {projector.setShutter(state);}
-        node.setFreeze = function(state) {projector.setFreeze(state);}
-        node.getProjectorModel = function() {return projector.model;}
-        node.getProjectorName = function() {return projector.name;}
-        node.setInput = function(inputFriendlyName) {projector.setInput(NtControl.ProjectorInput[inputFriendlyName]);}
-        node.queryRaw = function(command) {return projector.sendQuery(command);}
-        node.sendRaw = function(command, value) {return projector.sendValue(NtControl[command], value);}
+        node.setPower = function(state) {node.projector.setPower(state);}
+        node.setShutter = function(state) {node.projector.setShutter(state);}
+        node.setFreeze = function(state) {node.projector.setFreeze(state);}
+        node.getProjectorModel = function() {return node.projector.model;}
+        node.getProjectorName = function() {return node.projector.name;}
+        node.setInput = function(inputFriendlyName) {node.projector.setInput(node.NtControl.ProjectorInput[inputFriendlyName]);}
+        node.queryRaw = function(command) {return node.projector.sendQuery(command);}
+        node.sendRaw = function(command, value) {return node.projector.sendValue(node.NtControl[command], value);}
 
             // var value = undefined;
             // switch(inputFriendlyName.toUpperCase()) {

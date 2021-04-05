@@ -12,7 +12,7 @@ module.exports = function(RED)
         node.password = config.password;
         node.statusCallbacks = [];
         node.connected = false;
-        node.NtControl = require("ntcontrol-connection")
+        node.NtControl = require("ntcontrol-connection");
     
         node.projectorConnection = new node.NtControl.Client(node.ipAddress, node.port, (l, m) => console.log(l + ' - ' + m));
         node.projectorConnection.setAuthentication(node.username, node.password);
@@ -32,10 +32,6 @@ module.exports = function(RED)
                 node.warn("Panasonic Projector (" + node.ipAddress + ") Lost Connection");
                 node.connected = false;
             }
-        });
-
-        node.projectorConnection.on("data", function(data) {
-            console.log("DATA " + data);
         });
 
         node.projectorConnection.on("debug", function(msg) {
@@ -65,8 +61,24 @@ module.exports = function(RED)
         node.getProjectorModel = function() {return node.projector.model;}
         node.getProjectorName = function() {return node.projector.name;}
         node.setInput = function(inputFriendlyName) {node.projector.setInput(node.NtControl.ProjectorInput[inputFriendlyName]);}
-        node.queryRaw = function(command) {return node.projector.sendQuery(command);}
-        node.sendRaw = function(command, value) {return node.projector.sendValue(node.NtControl[command], value);}
+        node.queryRaw = function(command) {
+            var cmd = node.NtControl[command]; 
+            if(cmd !== undefined) {
+                return node.projector.sendQuery(cmd);
+            }
+            else {
+                return "Could not find command " + command;
+            }
+        }
+        node.sendRaw = function(command, value) {
+            var cmd = node.NtControl[command]; 
+            if(cmd !== undefined) {
+                return node.projector.sendValue(node.NtControl[command], value);
+            }
+            else {
+                return "Could not find command " + command;
+            }
+        }
 
             // var value = undefined;
             // switch(inputFriendlyName.toUpperCase()) {

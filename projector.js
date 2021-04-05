@@ -78,10 +78,10 @@ module.exports = function(RED)
 
                     //Switch the command
                     switch(msg.payload.command) {
-                        case "power": {node.projector.setPower(msg.payload.value); break;}
-                        case "shutter": {node.projector.setShutter(msg.payload.value); break;}
-                        case "freeze": {node.projector.setFreeze(msg.payload.value); break;}
-                        case "input": {node.projector.setInput(msg.payload.value); break;}
+                        case "PowerCommand": {node.projector.setPower(msg.payload.value); break;}
+                        case "ShutterCommand": {node.projector.setShutter(msg.payload.value); break;}
+                        case "FreezeCommand": {node.projector.setFreeze(msg.payload.value); break;}
+                        case "InputSelectCommand": {node.projector.setInput(msg.payload.value); break;}
                         default: {
                             //Raw command handler
                             node.projector.sendRaw(msg.payload.command, msg.payload.value).then(
@@ -104,45 +104,21 @@ module.exports = function(RED)
                     break;
                 }
                 case "get": {
-                     //Switch the command
-                    switch(msg.payload.command) {
-                        case "name": {
+                    var result = node.projector.queryRaw(msg.payload.command);
+                    if(typeof result != "string") {
+                        result.then(function(data) {
                             node.sendMessage({
                                 "topic": "response",
                                 "payload": {
                                     "command": msg.payload.command,
-                                    "value": node.projector.getProjectorName()
+                                    "value": data
                                 }
                             });
-                        }
-                        case "model": {
-                            node.sendMessage({
-                                "topic": "response",
-                                "payload": {
-                                    "command": msg.payload.command,
-                                    "value": node.projector.getProjectorModel()
-                                }
-                            });
-                        }
-                        default: {
-                            //Raw command handler
-                            node.projector.queryRaw(msg.payload.command).then(
-                                function(data) {
-                                    node.sendMessage({
-                                        "topic": "response",
-                                        "payload": {
-                                            "command": msg.payload.command,
-                                            "value": data
-                                        }
-                                    });
-                                },
-                                function(error) { //Probably need a handler to show command not found here
-                                    sendErrorMsg(error);
-                                }
-                            );
-                            break;
-                        }
-                    }  
+                        });
+                    }
+                    else {
+                        sendErrorMsg(result);
+                    } 
                     break;
                 }
                 default: {

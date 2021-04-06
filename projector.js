@@ -1,3 +1,5 @@
+const { GenericCommand } = require("ntcontrol-connection/dist/GenericCommands");
+
 module.exports = function(RED)
 {
     //Main Function
@@ -53,8 +55,7 @@ module.exports = function(RED)
             node.send(msg);
         }
 
-        //When we get an input on the node validate it and translate
-        this.on("input", function(msg) {
+        node.handleMsg = function(msg) {
             var sendErrorMsg = function(error) {
                 node.sendMessage({
                     "topic": "information",
@@ -68,64 +69,181 @@ module.exports = function(RED)
             if(msg.payload === undefined){node.error("There was no payload given! Cannot execute"); sendErrorMsg("No payload given"); return;}
             if(msg.payload.action === undefined){node.error("There was no action given! Cannot execute"); sendErrorMsg("No action given"); return;}
             if(msg.payload.command === undefined){node.error("There was no command given! Cannot execute"); sendErrorMsg("No command given"); return;}
+            var command = msg.payload.command;
+            switch(msg.payload.command) {
+                case "name": {
+                    command = "ProjectorNameCommand";
+                    break;
+                }
+                case "model": {
+                    command = "ModelNameCommand";
+                    break;
+                }
+                case "power": {
+                    command = "PowerCommand";
+                    break;
+                }
+                case "freeze": {
+                    command = "FreezeCommand";
+                    break;
+                }
+                case "shutter": {
+                    command = "ShutterCommand";
+                    break;
+                }
+                case "input": {
+                    command = "InputSelectCommand";
+                    break;
+                }
+                case "lampStatus": {
+                    command = "LampStatusCommand";
+                    break;
+                }
+                case "lampControl": {
+                    command = "LampControlStatusCommand";
+                    break;
+                }
+            }
 
-            //if(!projector.connected) {node.error("We cannot send the command cause we're not connected"); sendErrorMsg("Not connected"); return;}
+            var sendResponse = function(data, cmd) {
+                if(data !== undefined) {
+                    node.sendMessage({
+                        "topic": "response",
+                        "payload": {
+                            "command": msg.payload.command,
+                            "value": data
+                        }
+                    });
+                }
+            }
+            var responseCallback = function(data, cmd){sendResponse(data, cmd);}
 
             //Switch the action to be performed
             switch(msg.payload.action) {
                 case "set": {
                     if(msg.payload.value === undefined){node.error("There was no value given! Cannot execute"); return;}
+                    var value = msg.payload.value;
 
-                    //Switch the command
                     switch(msg.payload.command) {
-                        case "PowerCommand": {node.projector.setPower(msg.payload.value); break;}
-                        case "ShutterCommand": {node.projector.setShutter(msg.payload.value); break;}
-                        case "FreezeCommand": {node.projector.setFreeze(msg.payload.value); break;}
-                        case "InputSelectCommand": {node.projector.setInput(msg.payload.value); break;}
-                        default: {
-                            //Raw command handler
-                            node.projector.sendRaw(msg.payload.command, msg.payload.value).then(
-                                function(data) {
-                                    node.sendMessage({
-                                        "topic": "response",
-                                        "payload": {
-                                            "command": msg.payload.command,
-                                            "value": data
-                                        }
-                                    });
-                                },
-                                function(error) { //Probably need a handler to show command not found here
-                                    sendErrorMsg(error);
+                        case "power": {
+                            responseCallback = function(data) {
+                                switch(data){
+                                    case "PON": {sendResponse(true); break;}
+                                    case "POF": {sendResponse(false); break;}
+                                    default: {sendResponse(data); break;}
                                 }
-                            );
+                                
+                            }
+                            break;
+                        }
+                        case "freeze":
+                        case "shutter": {
+                            responseCallback = function(data, cmd) {
+                                sendResponse(data.replace(cmd.setCommand + cmd.setOperator, "") == "1");
+                            }
+                            break;
+                        }
+                        case "input": {
+                            value = node.projector.findInput(value).input;
+                            responseCallback = function(data, cmd) {
+                                sendResponse(node.projector.findInput(data.replace(cmd.setCommand + cmd.setOperator, "")).friendly);
+                            }
                             break;
                         }
                     }
+
+                    //Raw command handling
+                    if(command == "raw") {
+                        console.log("TODO");
+                        return;
+                    }
+
+                   //Execute it
+                   var cmd = node.projector.findCommand(command);
+                   if(cmd !== undefined) {
+                       node.projector.sendRaw(cmd, value).then(
+                           //Call the get command again so we have our handlers
+                            function(data) {
+                                responseCallback(data, cmd);
+                            },
+                           function(error) {sendErrorMsg("Error occurred sending command: " + command + ", " + error)});
+                   }
+                   else {
+                       sendErrorMsg("Could not find command: " + command);
+                   }
+
                     break;
                 }
                 case "get": {
-                    var result = node.projector.queryRaw(msg.payload.command);
-                    if(typeof result != "string") {
-                        result.then(function(data) {
-                            node.sendMessage({
-                                "topic": "response",
-                                "payload": {
-                                    "command": msg.payload.command,
-                                    "value": data
+                    //Supported commands
+                    switch(msg.payload.command) {
+                        case "power": {
+                            responseCallback = function(data) {
+                                var value = data;
+                                if(data == "001") {value = true;}
+                                else if(data == "000"){value = false;}
+                                sendResponse(value);
+                            }
+                            break;
+                        }
+                        case "freeze":
+                        case "shutter": {
+                            responseCallback = function(data) {
+                                var value = data;
+                                if(data == "1") {value = true;}
+                                else if(data == "0"){value = false;}
+                                sendResponse(value);
+                            }
+                            break;
+                        }
+                        case "lampControl": {
+                            responseCallback = function(data) {
+                                var value = data;
+                                switch(data) {
+                                    case "0": {value = "off"; break;}
+                                    case "1": {value = "warming"; break;}
+                                    case "2": {value = "on"; break;}
+                                    case "3": {value = "cooling"; break;}
                                 }
-                            });
-                        });
+                                sendResponse(value);
+                            }
+                            break;
+                        }
+                        case "input": {
+                            responseCallback = function(data) {
+                                sendResponse(node.projector.findInput(data).friendly);
+                            }
+                            break;
+                        }
+                    }
+
+                    var cmd = node.projector.findCommand(command);
+
+                    //Raw command handling
+                    if(command == "raw") {
+
+                        return;
+                    }
+
+                    //Execute it
+                    if(cmd !== undefined) {
+                        node.projector.queryRaw(cmd).then(
+                            function(data) {responseCallback(data);},
+                            function(error) {sendErrorMsg("Error occurred sending command: " + command + ", " + error)});
                     }
                     else {
-                        sendErrorMsg(result);
-                    } 
+                        sendErrorMsg("Could not find command: " + command);
+                    }
                     break;
                 }
                 default: {
                     node.warn("Misunderstood action: " + msg.payload.command);
                 }
             }
-        });
+        }
+
+        //When we get an input on the node validate it and translate
+        this.on("input", node.handleMsg);
 
     }
 

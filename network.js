@@ -38,12 +38,14 @@ module.exports = function(RED)
             if(msg.includes("Network error")) {
                 node.updateStatus("error", msg);
                 node.error("Panasonic Projector (" + node.ipAddress + ") Error: " + msg);
+                node.connected = false;
             }
         });
 
         node.projectorConnection.on("auth_error", function() {
             node.updateStatus("error", "Auth Error");
             node.error("Panasonic Projector (" + node.ipAddress + ") Authentication Error!");
+            node.connected = false;
         });
 
         //Add callbacks for status information
@@ -61,60 +63,15 @@ module.exports = function(RED)
         node.getProjectorModel = function() {return node.projector.model;}
         node.getProjectorName = function() {return node.projector.name;}
         node.setInput = function(inputFriendlyName) {node.projector.setInput(node.NtControl.ProjectorInput[inputFriendlyName]);}
-        node.queryRaw = function(command) {
-            var cmd = node.NtControl[command]; 
-            if(cmd !== undefined) {
-                return node.projector.sendQuery(cmd);
+        node.queryRaw = function(command) {return node.projector.sendQuery(command);}
+        node.findCommand = function(command) {return node.NtControl[command];}
+        node.sendRaw = function(command, value) {return node.projector.sendValue(command, value);}
+        node.findInput = function(input) {
+            for(var i in this.NtControl.ProjectorInput){
+                if(this.NtControl.ProjectorInput[i] == input || i == input){return {"friendly": i, "input": this.NtControl.ProjectorInput[i]}}
             }
-            else {
-                return "Could not find command " + command;
-            }
+            return {"friendly": "unknown", "input": ""};
         }
-        node.sendRaw = function(command, value) {
-            var cmd = node.NtControl[command]; 
-            if(cmd !== undefined) {
-                return node.projector.sendValue(node.NtControl[command], value);
-            }
-            else {
-                return "Could not find command " + command;
-            }
-        }
-
-            // var value = undefined;
-            // switch(inputFriendlyName.toUpperCase()) {
-            //     case "COMPUTER1": {value = NtControl.ProjectorInput.COMPUTER1; break;}
-            //     case "COMPUTER2": {value = NtControl.ProjectorInput.COMPUTER2; break;}
-            //     case "VIDEO": {value = NtControl.ProjectorInput.VIDEO; break;}
-            //     case "Y/C": {value = NtControl.ProjectorInput["Y/C"]; break;}
-            //     case "DVI": {value = NtControl.ProjectorInput.DVI; break;}
-            //     case "HDMI1": {value = NtControl.ProjectorInput.HDMI1; break;}
-            //     case "HDMI2": {value = NtControl.ProjectorInput.HDMI2; break;}
-            //     case "NETWORK/USB": {value = NtControl.ProjectorInput["NETWORK/USB"]; break;}
-            //     case "Panasonic Application": {value = NtControl.ProjectorInput["Panasonic Application"]; break;}
-            //     case "Miracast/Mirroring": {value = NtControl.ProjectorInput["Miracast/Mirroring"]; break;}
-            //     case "MEMORY VIEWER": {value = NtControl.ProjectorInput["MEMORY VIEWER"]; break;}
-            //     case "SDI1": {value = NtControl.ProjectorInput.SDI1; break;}
-            //     case "SDI2": {value = NtControl.ProjectorInput.SDI2; break;}
-            //     case "DIGITAL LINK": {value = NtControl.ProjectorInput["DIGITAL LINK"]; break;}
-            //     default: {
-            //         node.error("Misunderstood input: " + inputFriendlyName);
-            //         return;
-            //     }
-          
-        //}
-
-        // projector.setPower(true);
-        // projector.setShutter(true);
-        // projector.setInput(NtControl.ProjectorInput.COMPUTER1);
-        // projector.setFreeze(true);
-        // projector.model
-        // projector.name
-
-        // projectorConnection.on("connect", () => {
-        //     setTimeout(() => {
-        //         pj.sendQuery(NtControl.InputSelectCommand).then(data => console.log('Got data: ' + data), err => console.log(err))
-        //     }, 1000)
-        // }
     }
 
     RED.nodes.registerType("panasonicprojector-network", Network);

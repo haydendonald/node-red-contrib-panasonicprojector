@@ -33,54 +33,42 @@ The following is the basic syntax of a message to be sent to the node
     }
 }
 ```
-## Get Commands
+
+## Commands
 The following commands are supported for using ```action="get"```
-* ```name``` The name of the projector
-* ```model``` The model of the projector
-* ```<<rawCommand>>``` Will set a raw command value. See [here](https://github.com/peschuster/ntcontrol-connection/blob/master/src/Commands.ts) for more information. Where ```rawCommand``` is the command name for instance ```ModelNameCommand```
+* ```name (get)``` The name of the projector
+* ```model (get)``` The model of the projector
+* ```power (get/set)``` The current power status of the projector
+    * ```true/false```
+* ```freeze (get/set)``` The freeze status
+* ```shutter (get/set)``` The shutter status
+* ```input (get/set)``` The input of the projector
+    * See [here](https://github.com/peschuster/ntcontrol-connection/blob/master/src/Types.ts) for input names
+* ```lampStatus (get)``` The current status of the lamp(s)
+* ```lampControl (get)``` The current lamp control status of the lamp(s)
+    * ```off``` Lamp is off
+    * ```warming``` Lamp is warming up
+    * ```on``` Lamp is at full intensity
+    * ```cooling``` Lamp is cooling down
+* ```raw``` Sends a raw command see [here](https://na.panasonic.com/ns/265897_rz570_rz575_command_en_ja.pdf) for raw commands (Not supported yet)
+* It is also possible to send direct commands supported by ntcontrol-connection, see [here](https://github.com/peschuster/ntcontrol-connection/blob/master/src/Commands.ts) for more information. Where ```command``` is the command name for instance ```ModelNameCommand```
 
 ### Example
 ```
+//Get payload
 {
     "payload": {
         "action": "get",
-        "command": "name"
+        "command": "power"
     }
 }
-```
 
-## Set Commands
-The following commands are supported for using ```action="set"```
-* ```power``` Sets the power state of the projector.
-    * true/false
-* ```shutter``` Sets the shutter state of the projector.
-    * true/false
-* ```freeze``` Sets the freeze state of the projector.
-    * true/false
-* ```input``` Sets the input on the projector
-    * COMPUTER1
-    * COMPUTER2
-    * VIDEO
-    * Y/C
-    * DVI
-    * HDMI1
-    * HDMI2
-    * NETWORK/USB
-    * Panasonic Application
-    * Miracast/Mirroring
-    * MEMORY VIEWER
-    * SDI1
-    * SDI2
-    * DIGITAL LINK
-* ```<<rawCommand>>``` Will set a raw command value. See [here](https://github.com/peschuster/ntcontrol-connection/blob/master/src/Commands.ts) for more information. Where ```rawCommand``` is the command name for instance ```ModelNameCommand```
-
-### Example
-```
+//Set payload
 {
     "payload": {
         "action": "set",
         "command": "power",
-        "value": true //boolean
+        "value": true
     }
 }
 ```

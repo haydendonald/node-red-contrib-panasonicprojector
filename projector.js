@@ -1,3 +1,4 @@
+const { DefaultStringConverter, NumberConverter } = require("ntcontrol-connection");
 const { GenericCommand } = require("ntcontrol-connection/dist/GenericCommands");
 
 module.exports = function(RED)
@@ -121,6 +122,8 @@ module.exports = function(RED)
             //Switch the action to be performed
             switch(msg.payload.action) {
                 case "set": {
+                    var cmd = node.projector.findCommand(command);
+
                     if(msg.payload.value === undefined){node.error("There was no value given! Cannot execute"); return;}
                     var value = msg.payload.value;
 
@@ -159,7 +162,6 @@ module.exports = function(RED)
                     }
 
                    //Execute it
-                   var cmd = node.projector.findCommand(command);
                    if(cmd !== undefined) {
                        node.projector.sendRaw(cmd, value).then(
                            //Call the get command again so we have our handlers
@@ -175,6 +177,8 @@ module.exports = function(RED)
                     break;
                 }
                 case "get": {
+                    var cmd = node.projector.findCommand(command);
+
                     //Supported commands
                     switch(msg.payload.command) {
                         case "power": {
@@ -215,9 +219,12 @@ module.exports = function(RED)
                             }
                             break;
                         }
+                        case "lampHours": {
+                            cmd = new GenericCommand("$L:0", "LampHours", new NumberConverter(0, 9999));
+                            console.log(cmd);
+                            break;
+                        }
                     }
-
-                    var cmd = node.projector.findCommand(command);
 
                     //Raw command handling
                     if(command == "raw") {
